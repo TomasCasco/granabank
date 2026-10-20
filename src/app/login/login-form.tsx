@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useLayoutEffect, useState, type FormEvent, type ReactNode } from "react";
 import { apiFetch } from "@/lib/fetcher";
 import { safeNextPath } from "@/lib/redirect";
 import { loginSchema } from "@/lib/validation";
@@ -20,6 +20,19 @@ export function LoginForm() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Next 16 keeps visited pages alive (hidden with <Activity>) instead of unmounting them. Without this,
+  // coming back after a logout would restore the form mid-submit ("Ingresando…", disabled) with the
+  // old password still in memory. Cleanup runs when the page is hidden.
+  useLayoutEffect(() => {
+    return () => {
+      setPassword("");
+      setShowPassword(false);
+      setFieldErrors({});
+      setFormError(null);
+      setSubmitting(false);
+    };
+  }, []);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();

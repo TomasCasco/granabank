@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Suspense, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { apiFetch } from "@/lib/fetcher";
 
@@ -30,8 +29,6 @@ function ActiveNavBar() {
 }
 
 function NavBar({ pathname }: { pathname: string | null }) {
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -40,10 +37,9 @@ function NavBar({ pathname }: { pathname: string | null }) {
     try {
       await apiFetch("/api/auth/logout", { method: "POST" });
     } finally {
-      // Drop cached user data so the next login never sees the previous user's info.
-      queryClient.clear();
-      router.replace("/login");
-      router.refresh();
+      // Full reload on purpose: Next keeps visited pages alive in memory (hidden with <Activity>), so a
+      // client-side navigation would leave the user's balance and movements in the DOM after logout.
+      window.location.replace("/login");
     }
   }
 

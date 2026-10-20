@@ -64,6 +64,12 @@ test("full flow: home, search, filter, detail and logout", async ({ page }) => {
   await page.getByRole("button", { name: "Cerrar sesión" }).click();
   await dialog.getByRole("button", { name: "Cerrar sesión" }).click();
   await expect(page).toHaveURL("/login");
+
+  // Regression: no user data may survive the logout, and logging in again must work.
+  expect(await page.content()).not.toContain("978.85");
+  await expect(page.getByRole("button", { name: "Ingresar" })).toBeEnabled();
+  await login(page);
+  await expect(page.getByRole("heading", { name: "Granate" })).toBeVisible();
 });
 
 test("shows not found for a movement that does not exist", async ({ page }) => {
