@@ -27,6 +27,29 @@ npm run dev
 
 Abrir http://localhost:3000 e ingresar con las credenciales de arriba.
 
+### Tests
+
+```bash
+npm test                         # unitarios (Vitest)
+npx playwright install chromium  # solo la primera vez
+npm run test:e2e                 # end-to-end (Playwright); levanta la app sola en el puerto 3100
+```
+
+- **Unitarios:** cubren la lógica con casos borde:
+  - El vencimiento de tarjetas, incluido el cambio de año.
+  - La búsqueda sin tildes.
+  - El formato de montos.
+  - La validación del login.
+  - La protección contra *open redirect*.
+- **End-to-end:** recorren la app como un usuario en un celular:
+  - Login, con un caso de error.
+  - Home.
+  - Búsqueda y filtros.
+  - Detalle y movimiento inexistente.
+  - Cierre de sesión con confirmación.
+
+  Necesitan la base con los datos de ejemplo (`npm run db:seed`).
+
 | Variable         | Para qué                                                                  |
 | ---------------- | ------------------------------------------------------------------------- |
 | `DATABASE_URL`   | Conexión **con pooling** de Neon. La usa la app.                          |
@@ -36,6 +59,7 @@ Abrir http://localhost:3000 e ingresar con las credenciales de arriba.
 ## Estructura
 
 ```
+e2e/                   tests end-to-end (Playwright)
 prisma/
   schema.prisma        modelos: User, Card, Movement
   seed.ts              usuario de prueba, 2 tarjetas y 14 movimientos
@@ -54,6 +78,7 @@ src/
     validation.ts      schemas de Zod compartidos entre cliente y API
     queries.ts         hooks de TanStack Query
     types.ts           tipos de las respuestas de la API
+    *.test.ts          tests unitarios junto al código que prueban
 ```
 
 ## Decisiones técnicas
@@ -66,6 +91,8 @@ src/
 - Las contraseñas se guardan hasheadas con bcrypt.
 - El mensaje de error es el mismo si falla el email o la contraseña, para no revelar qué cuentas existen.
 - Cuando el email no existe, igual se compara contra un hash, para que la respuesta tarde lo mismo.
+
+**Volver a donde ibas.** Si alguien abre un link sin sesión, el login recuerda la página (`/login?next=...`) y vuelve ahí después de ingresar. Solo se aceptan rutas internas, para que nadie pueda armar un link de login que redirija a un sitio externo (*open redirect*).
 
 **Autorización en dos niveles.** El `proxy` redirige rápido a `/login` a quien no tiene sesión. Aun así, cada API route vuelve a verificar la sesión, y todas las consultas filtran por el usuario logueado. Un movimiento de otro usuario responde 404, igual que uno inexistente, para no revelar que existe.
 
@@ -89,12 +116,15 @@ src/
 **Detalles de UX.**
 - **Deslizar con el mouse:** el carrusel de tarjetas y los filtros se pueden arrastrar con el mouse, como con el dedo. El arrastre no activa el filtro sobre el que termina.
 - **Confirmación al salir:** cerrar sesión pide confirmación con un `<dialog>` nativo, que se cierra con Esc o con un clic afuera.
+- **Ocultar el saldo:** un ojito en la tarjeta oculta el saldo. La preferencia queda guardada en el dispositivo, como en las apps de bancos.
+- **Página 404 propia, favicon y títulos por pestaña,** con la identidad de GranaBank.
 
 **Accesibilidad.** HTML semántico, labels en todos los campos, `aria-current` en la navegación, `aria-pressed` en los filtros, foco visible y textos alternativos.
 
 ## Qué mejoraría con más tiempo
 
-- **Tests:** unitarios para `services` y validaciones, y end-to-end con Playwright para el login, la búsqueda y el detalle.
+- **Tests de integración** de las API routes contra una base de prueba aislada.
+- **Contraste del gris de los textos secundarios** (#AAAAAA sobre blanco). Respeté el color del Figma, pero no llega al mínimo de accesibilidad (WCAG AA). Lo charlaría con diseño.
 - **Límite de intentos de login** por IP o email, para frenar ataques de fuerza bruta.
 - **Paginación o scroll infinito** en Movimientos. Hoy trae todos, que alcanza para el volumen de ejemplo.
 - **Agrupar movimientos por fecha** ("Hoy", "Ayer", "Esta semana").
