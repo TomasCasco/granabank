@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MovementListSkeleton } from "@/components/states";
-import { MovementsView } from "./movements-view";
+import { MovementsView } from "@/components/movements-view";
 
 export const metadata: Metadata = { title: "Movimientos" };
 

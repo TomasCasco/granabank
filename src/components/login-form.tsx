@@ -5,6 +5,7 @@ import { useLayoutEffect, useState, type FormEvent, type ReactNode } from "react
 import { apiFetch } from "@/lib/fetcher";
 import { safeNextPath } from "@/lib/redirect";
 import { loginSchema } from "@/lib/validation";
+import { useVersion } from "@/lib/version";
 
 type FieldErrors = Partial<Record<"email" | "password", string>>;
 
@@ -13,6 +14,7 @@ const inputClass =
 
 export function LoginForm() {
   const router = useRouter();
+  const { isV2, to } = useVersion();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -58,7 +60,7 @@ export function LoginForm() {
         body: JSON.stringify(parsed.data),
       });
       // Read at submit time (not via useSearchParams) so the form stays in the prerendered HTML.
-      router.replace(safeNextPath(new URLSearchParams(window.location.search).get("next")));
+      router.replace(safeNextPath(new URLSearchParams(window.location.search).get("next"), to("/")));
       router.refresh();
     } catch (error) {
       setFormError(error instanceof Error ? error.message : "Algo salió mal. Probá de nuevo.");
@@ -82,7 +84,7 @@ export function LoginForm() {
               type="email"
               inputMode="email"
               autoComplete="email"
-              placeholder="Ingresa tu email"
+              placeholder={isV2 ? "Ingresá tu email" : "Ingresa tu email"}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               aria-invalid={!!fieldErrors.email}
@@ -97,7 +99,7 @@ export function LoginForm() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                placeholder="Ingresa tu contraseña"
+                placeholder={isV2 ? "Ingresá tu contraseña" : "Ingresa tu contraseña"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 aria-invalid={!!fieldErrors.password}

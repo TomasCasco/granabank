@@ -54,3 +54,8 @@ body {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* v2 design suggestion: secondary gray darkened from #AAAAAA (2.3:1) to #737373 (4.7:1 on white, WCAG AA). */
+.v2 {
+  --color-muted: #737373;
+}

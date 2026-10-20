@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { DetailHeader, DetailSkeleton, MovementDetail } from "./movement-detail";
+import { DetailHeader, DetailSkeleton, MovementDetail } from "@/components/movement-detail";
 
 export const metadata: Metadata = { title: "Detalle" };
 

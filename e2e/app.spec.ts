@@ -79,3 +79,32 @@ test("shows not found for a movement that does not exist", async ({ page }) => {
   await page.goto("/movimientos/no-existe");
   await expect(page.getByText("Movimiento no encontrado")).toBeVisible();
 });
+
+test("v2 applies the design suggestions and the switcher keeps the screen", async ({ page }) => {
+  await page.goto("/v2/movimientos");
+  await expect(page).toHaveURL(/\/v2\/login\?next=%2Fv2%2Fmovimientos$/);
+  await expect(page.getByPlaceholder("Ingresá tu email")).toBeVisible();
+  await login(page);
+  await expect(page).toHaveURL("/v2/movimientos");
+
+  // Movements grouped by day ("Hoy", "Ayer", "15 de octubre"… depending on when the seed ran),
+  // with a sign that doesn't rely on color.
+  await expect(page.getByRole("heading", { level: 3 }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: /Ronaldo/ })).toContainText("+$95");
+  await expect(page.getByRole("button", { name: "Débito autom." })).toBeVisible();
+
+  // Home: the balance is the headline and is not repeated on the cards.
+  await page.getByRole("link", { name: "Inicio" }).click();
+  await expect(page).toHaveURL("/v2");
+  await expect(page.getByText("Saldo disponible")).toBeVisible();
+  await expect(page.getByText("978.85")).toHaveCount(1);
+  await page.getByRole("link", { name: "Ver todos" }).click();
+  await expect(page).toHaveURL("/v2/movimientos");
+
+  // The switcher opens the same screen in the Figma version, keeping filters.
+  await page.getByRole("button", { name: "Recibido" }).click();
+  await expect(page).toHaveURL(/type=CASH_IN/);
+  await page.getByRole("group", { name: "Versión del diseño" }).getByRole("button", { name: "Figma" }).click();
+  await expect(page).toHaveURL("/movimientos?type=CASH_IN");
+  await expect(page.getByRole("button", { name: "Debito Aut." })).toBeVisible();
+});

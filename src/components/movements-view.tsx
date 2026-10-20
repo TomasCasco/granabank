@@ -7,11 +7,13 @@ import { MovementList } from "@/components/movement-list";
 import { EmptyState } from "@/components/states";
 import { useMovements } from "@/lib/queries";
 import { useDragScroll } from "@/lib/use-drag-scroll";
+import { useVersion } from "@/lib/version";
 import { MOVEMENT_TYPES, type MovementType } from "@/lib/types";
 
-const FILTERS: { label: string; type?: MovementType }[] = [
+// `labelV2` fixes the missing accent; the Figma label stays as-is in v1.
+const FILTERS: { label: string; labelV2?: string; type?: MovementType }[] = [
   { label: "Todos" },
-  { label: "Debito Aut.", type: "SUBSCRIPTION" },
+  { label: "Debito Aut.", labelV2: "Débito autom.", type: "SUBSCRIPTION" },
   { label: "Recibido", type: "CASH_IN" },
   { label: "Enviado", type: "CASH_OUT" },
 ];
@@ -41,6 +43,7 @@ export function MovementsView() {
   const q = searchParams.get("q") ?? "";
   const [input, setInput] = useState(q);
   const filtersScroller = useDragScroll<HTMLDivElement>();
+  const { isV2 } = useVersion();
 
   function updateUrl(next: { type?: MovementType; q?: string }) {
     router.replace(buildHref(pathname, next), { scroll: false });
@@ -83,7 +86,7 @@ export function MovementsView() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           maxLength={SEARCH_MAX_LENGTH}
-          placeholder="Ingresa un nombre o servicio"
+          placeholder={isV2 ? "Ingresá un nombre o servicio" : "Ingresa un nombre o servicio"}
           autoComplete="off"
           className="h-[60px] w-full rounded-[16px] bg-white pr-12 pl-[52px] text-sm text-ink shadow-soft outline-none placeholder:text-xs placeholder:font-medium placeholder:text-muted focus-visible:ring-2 focus-visible:ring-granate/40 [&::-webkit-search-cancel-button]:hidden"
         />
@@ -115,7 +118,7 @@ export function MovementsView() {
               onClick={() => updateUrl({ type: filter.type, q: input.trim() })}
               className={`h-[41px] shrink-0 rounded-[16px] px-5 text-sm leading-[22px] font-medium shadow-soft transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-granate ${active ? "bg-granate text-white" : "bg-white text-black hover:bg-base"}`}
             >
-              {filter.label}
+              {(isV2 && filter.labelV2) || filter.label}
             </button>
           );
         })}
