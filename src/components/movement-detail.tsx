@@ -9,6 +9,7 @@ import { ApiError } from "@/lib/fetcher";
 import { formatAmount, formatDateTime, MOVEMENT_STATUS_LABEL, MOVEMENT_TYPE_LABEL } from "@/lib/format";
 import { useMovement } from "@/lib/queries";
 import type { MovementDTO, MovementStatus } from "@/lib/types";
+import { useVersion } from "@/lib/version";
 
 const STATUS_STYLE: Record<MovementStatus, string> = {
   COMPLETED: "bg-success-soft text-success",
@@ -20,11 +21,12 @@ const BRAND_LABEL = { MASTERCARD: "Mastercard", VISA: "Visa" } as const;
 
 export function DetailHeader() {
   const router = useRouter();
+  const { to } = useVersion();
 
   // Prefer real history so "back" returns to the filtered list the user came from.
   function goBack() {
     if (window.history.length > 1) router.back();
-    else router.push("/movimientos");
+    else router.push(to("/movimientos"));
   }
 
   return (
@@ -45,6 +47,7 @@ export function DetailHeader() {
 export function MovementDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const movement = useMovement(id);
+  const { to } = useVersion();
   if (movement.isPending) return <DetailSkeleton />;
 
   return (
@@ -53,7 +56,7 @@ export function MovementDetail({ params }: { params: Promise<{ id: string }> }) 
           (movement.error instanceof ApiError && movement.error.status === 404 ? (
             <EmptyState title="Movimiento no encontrado">
               <p>Puede que el enlace sea incorrecto o que el movimiento ya no exista.</p>
-              <Link href="/movimientos" className="mt-3 inline-block font-medium text-granate underline-offset-2 hover:underline">
+              <Link href={to("/movimientos")} className="mt-3 inline-block font-medium text-granate underline-offset-2 hover:underline">
                 Ver todos los movimientos
               </Link>
             </EmptyState>

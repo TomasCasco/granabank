@@ -1,3 +1,4 @@
+import { loginPathFor } from "@/lib/redirect";
 import type { ApiErrorBody } from "@/lib/types";
 
 export class ApiError extends Error {
@@ -19,10 +20,14 @@ export async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const body = (await response.json().catch(() => null)) as ApiErrorBody | null;
-    // A dead session anywhere but the login form sends the user back to log in. This module has no
-    // router access, and a full reload also wipes any cached data from the expired session.
-    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-    if (response.status === 401 && url !== "/api/auth/login") window.location.assign("/login");
+    // A dead session anywhere but the login form sends the user back to log in, then back here. This
+    // module has no router access, and a full reload also wipes any cached data from the expired session.
+    if (response.status === 401 && url !== "/api/auth/login") {
+      const { pathname, search } = window.location;
+      const next = encodeURIComponent(pathname + search);
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.assign(`${loginPathFor(pathname)}?next=${next}`);
+    }
     throw new ApiError(response.status, body?.error ?? "Algo salió mal. Probá de nuevo.");
   }
 
