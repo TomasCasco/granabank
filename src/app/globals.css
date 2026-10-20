@@ -32,6 +32,13 @@ body {
   color: var(--color-ink);
 }
 
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
 /* Horizontal chip/card rows scroll by touch without showing a scrollbar. */
 .no-scrollbar {
   scrollbar-width: none;

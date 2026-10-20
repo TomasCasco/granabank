@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { apiFetch } from "@/lib/fetcher";
 
 const LINKS = [
@@ -31,6 +32,7 @@ function ActiveNavBar() {
 function NavBar({ pathname }: { pathname: string | null }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
   async function logout() {
@@ -46,27 +48,41 @@ function NavBar({ pathname }: { pathname: string | null }) {
   }
 
   return (
-    <nav
-      aria-label="Navegación principal"
-      className="fixed inset-x-0 bottom-0 z-10 mx-auto grid h-[86px] w-full max-w-[430px] grid-cols-3 place-items-center rounded-t-[24px] bg-white shadow-soft-up"
-    >
-      {LINKS.map(({ href, label, icon, w, h, isActive }) => {
-        const active = pathname !== null && isActive(pathname);
-        return (
-          <Link key={href} href={href} aria-label={label} aria-current={active ? "page" : undefined} className={itemClass}>
-            <Image src={`/icons/${icon}${active ? "-active" : ""}.svg`} alt="" width={w} height={h} />
-          </Link>
-        );
-      })}
-      <button
-        type="button"
-        onClick={logout}
-        disabled={loggingOut}
-        aria-label="Cerrar sesión"
-        className={`${itemClass} disabled:opacity-50`}
+    <>
+      <nav
+        aria-label="Navegación principal"
+        className="fixed inset-x-0 bottom-0 z-10 mx-auto grid h-[86px] w-full max-w-[430px] grid-cols-3 place-items-center rounded-t-[24px] bg-white shadow-soft-up"
       >
-        <Image src="/icons/logout.svg" alt="" width={27.5} height={26.13} />
-      </button>
-    </nav>
+        {LINKS.map(({ href, label, icon, w, h, isActive }) => {
+          const active = pathname !== null && isActive(pathname);
+          return (
+            <Link key={href} href={href} aria-label={label} aria-current={active ? "page" : undefined} className={itemClass}>
+              <Image src={`/icons/${icon}${active ? "-active" : ""}.svg`} alt="" width={w} height={h} />
+            </Link>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => setConfirmOpen(true)}
+          disabled={loggingOut}
+          aria-label="Cerrar sesión"
+          aria-haspopup="dialog"
+          className={`${itemClass} disabled:opacity-50`}
+        >
+          <Image src="/icons/logout.svg" alt="" width={27.5} height={26.13} />
+        </button>
+      </nav>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="¿Cerrar sesión?"
+        confirmLabel={loggingOut ? "Cerrando…" : "Cerrar sesión"}
+        busy={loggingOut}
+        onConfirm={logout}
+        onCancel={() => setConfirmOpen(false)}
+      >
+        Vas a tener que volver a ingresar con tu email y contraseña.
+      </ConfirmDialog>
+    </>
   );
 }

@@ -86,6 +86,10 @@ src/
 
 **Detalle de movimiento.** No estaba en el Figma, así que lo diseñé con el mismo lenguaje visual: ícono y monto grandes, estado con color y una tarjeta con tipo, fecha, medio de pago, descripción y número de operación.
 
+**Detalles de UX.**
+- **Deslizar con el mouse:** el carrusel de tarjetas y los filtros se pueden arrastrar con el mouse, como con el dedo. El arrastre no activa el filtro sobre el que termina.
+- **Confirmación al salir:** cerrar sesión pide confirmación con un `<dialog>` nativo, que se cierra con Esc o con un clic afuera.
+
 **Accesibilidad.** HTML semántico, labels en todos los campos, `aria-current` en la navegación, `aria-pressed` en los filtros, foco visible y textos alternativos.
 
 ## Qué mejoraría con más tiempo
