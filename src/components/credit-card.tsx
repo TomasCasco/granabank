@@ -13,9 +13,15 @@ const STATUS_LABEL: Record<CardDTO["status"], string | null> = {
   EXPIRED: "Vencida",
 };
 
-type Props = { card: CardDTO; balanceCents: number; currency: string };
+type Props = {
+  card: CardDTO;
+  balanceCents: number;
+  currency: string;
+  balanceHidden: boolean;
+  onToggleBalance: () => void;
+};
 
-export function CreditCard({ card, balanceCents, currency }: Props) {
+export function CreditCard({ card, balanceCents, currency, balanceHidden, onToggleBalance }: Props) {
   const brand = BRAND[card.brand];
   const statusLabel = STATUS_LABEL[card.status];
   const exp = `${String(card.expMonth).padStart(2, "0")}/${String(card.expYear).slice(-2)}`;
@@ -27,13 +33,31 @@ export function CreditCard({ card, balanceCents, currency }: Props) {
     >
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-2">
-          <p className="text-sm leading-[22px]">Balance</p>
+          <p className="flex items-center gap-1.5 text-sm leading-[22px]">
+            Balance
+            <button
+              type="button"
+              onClick={onToggleBalance}
+              aria-pressed={balanceHidden}
+              aria-label={balanceHidden ? "Mostrar saldo" : "Ocultar saldo"}
+              className="-m-1 grid size-7 place-items-center rounded-full opacity-80 transition hover:bg-white/15 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-current"
+            >
+              <EyeIcon crossed={balanceHidden} />
+            </button>
+          </p>
           <p className="flex items-center gap-[9px]">
             <span className="relative grid h-[30px] w-12 place-items-center">
               <Image src="/icons/currency-chip.svg" alt="" width={48} height={30} className="absolute inset-0" />
               <span className="relative text-sm leading-[22px] font-medium text-white">{currency}</span>
             </span>
-            <span className="text-[22px] leading-7 font-medium">{formatBalance(balanceCents)}</span>
+            {balanceHidden ? (
+              <span className="text-[22px] leading-7 font-medium tracking-widest">
+                <span aria-hidden>••••••</span>
+                <span className="sr-only">Saldo oculto</span>
+              </span>
+            ) : (
+              <span className="text-[22px] leading-7 font-medium">{formatBalance(balanceCents)}</span>
+            )}
           </p>
         </div>
         <div className="flex flex-col items-end gap-1">
@@ -61,5 +85,15 @@ export function CreditCard({ card, balanceCents, currency }: Props) {
         </p>
       </div>
     </article>
+  );
+}
+
+function EyeIcon({ crossed }: { crossed: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+      <circle cx="12" cy="12" r="3" />
+      {crossed && <path d="M3 3l18 18" />}
+    </svg>
   );
 }

@@ -8,6 +8,7 @@ import { MovementList } from "@/components/movement-list";
 import { EmptyState, ErrorState, Skeleton } from "@/components/states";
 import { useMovements, useProfile } from "@/lib/queries";
 import { useDragScroll } from "@/lib/use-drag-scroll";
+import { useHiddenBalance } from "@/lib/use-hidden-balance";
 
 const LATEST_COUNT = 5;
 
@@ -15,6 +16,7 @@ export default function HomePage() {
   const profile = useProfile();
   const latest = useMovements({ limit: LATEST_COUNT });
   const cardsScroller = useDragScroll<HTMLUListElement>();
+  const [balanceHidden, toggleBalance] = useHiddenBalance();
 
   return (
     <>
@@ -41,7 +43,13 @@ export default function HomePage() {
           >
             {profile.data.cards.map((card) => (
               <li key={card.id} className="w-[348px] max-w-[92%] shrink-0 snap-start">
-                <CreditCard card={card} balanceCents={profile.data.balanceCents} currency={profile.data.currency} />
+                <CreditCard
+                  card={card}
+                  balanceCents={profile.data.balanceCents}
+                  currency={profile.data.currency}
+                  balanceHidden={balanceHidden}
+                  onToggleBalance={toggleBalance}
+                />
               </li>
             ))}
           </ul>
