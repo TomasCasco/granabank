@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MovementType {
+  SUBSCRIPTION
+  CASH_IN
+  CASH_OUT
+}
+
+enum MovementStatus {
+  COMPLETED
+  PENDING
+  FAILED
+}
+
+enum CardBrand {
+  MASTERCARD
+  VISA
+}
+
+/// The user is also the account: GranaBank is a wallet, so the balance lives here, not on the cards.
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String
+  passwordHash String
+  balanceCents Int        @default(0)
+  currency     String     @default("USD")
+  createdAt    DateTime   @default(now())
+  cards        Card[]
+  movements    Movement[]
+}
+
+model Card {
+  id         String     @id @default(cuid())
+  userId     String
+  brand      CardBrand
+  last4      String     @db.Char(4)
+  holderName String
+  expMonth   Int
+  expYear    Int
+  /// Expiration is derived from expMonth/expYear; only blocking is stored.
+  isBlocked  Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movements  Movement[]
+
+  @@index([userId])
+}
+
+model Movement {
+  id           String         @id @default(cuid())
+  userId       String
+  cardId       String?
+  type         MovementType
+  status       MovementStatus @default(COMPLETED)
+  counterparty String
+  /// Lowercased, accent-free copy of counterparty so "jose" matches "José".
+  searchKey    String
+  description  String?
+  amountCents  Int
+  currency     String         @default("USD")
+  date         DateTime
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card         Card?          @relation(fields: [cardId], references: [id], onDelete: SetNull)
+
+  @@index([userId, date(sort: Desc)])
+}
