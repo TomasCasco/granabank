@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { MovementList } from "@/components/movement-list";
 import { EmptyState } from "@/components/states";
 import { useMovements } from "@/lib/queries";
+import { useDragScroll } from "@/lib/use-drag-scroll";
 import { MOVEMENT_TYPES, type MovementType } from "@/lib/types";
 
 const FILTERS: { label: string; type?: MovementType }[] = [
@@ -39,6 +40,7 @@ export function MovementsView() {
   const type = parseType(searchParams.get("type"));
   const q = searchParams.get("q") ?? "";
   const [input, setInput] = useState(q);
+  const filtersScroller = useDragScroll<HTMLDivElement>();
 
   function updateUrl(next: { type?: MovementType; q?: string }) {
     router.replace(buildHref(pathname, next), { scroll: false });
@@ -97,7 +99,12 @@ export function MovementsView() {
         )}
       </form>
 
-      <div role="group" aria-label="Filtrar por tipo" className="no-scrollbar -mx-6 mt-4 flex gap-[10px] overflow-x-auto px-6 py-2">
+      <div
+        {...filtersScroller}
+        role="group"
+        aria-label="Filtrar por tipo"
+        className="no-scrollbar -mx-6 mt-4 flex cursor-grab gap-[10px] overflow-x-auto px-6 py-2 select-none"
+      >
         {FILTERS.map((filter) => {
           const active = filter.type === type;
           return (

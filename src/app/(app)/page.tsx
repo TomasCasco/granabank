@@ -7,12 +7,14 @@ import { CreditCard } from "@/components/credit-card";
 import { MovementList } from "@/components/movement-list";
 import { EmptyState, ErrorState, Skeleton } from "@/components/states";
 import { useMovements, useProfile } from "@/lib/queries";
+import { useDragScroll } from "@/lib/use-drag-scroll";
 
 const LATEST_COUNT = 5;
 
 export default function HomePage() {
   const profile = useProfile();
   const latest = useMovements({ limit: LATEST_COUNT });
+  const cardsScroller = useDragScroll<HTMLUListElement>();
 
   return (
     <>
@@ -33,7 +35,10 @@ export default function HomePage() {
         {profile.isError && <ErrorState message={profile.error.message} onRetry={() => profile.refetch()} />}
         {profile.data && (
           // Full-bleed horizontal scroller so the next card peeks in from the edge, as in the design.
-          <ul className="no-scrollbar -mx-6 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-6 px-6 pb-2">
+          <ul
+            {...cardsScroller}
+            className="no-scrollbar -mx-6 flex cursor-grab snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-6 px-6 pb-2 select-none"
+          >
             {profile.data.cards.map((card) => (
               <li key={card.id} className="w-[348px] max-w-[92%] shrink-0 snap-start">
                 <CreditCard card={card} balanceCents={profile.data.balanceCents} currency={profile.data.currency} />
