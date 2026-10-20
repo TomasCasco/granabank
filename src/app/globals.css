@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Tokens taken from the Figma styles. */
+@theme {
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-granate: #7a1d2d;
+  --color-granate-soft: rgb(122 29 45 / 0.2);
+  --color-blush: #f9b7b7;
+  --color-base: #f9fafc;
+  --color-ink: #334154;
+  --color-ink-2: #616e7c;
+  --color-slate: #717e95;
+  --color-muted: #aaaaaa;
+  --color-subscription: #b946ff;
+  --color-subscription-soft: #f4e3ff;
+  --color-cash-out: #ef9c55;
+  --color-cash-out-soft: #feead4;
+  --color-success: #2f9e66;
+  --color-success-soft: #e4fff0;
+  --color-warning: #c27a14;
+  --color-warning-soft: #fff4dc;
+  --color-danger: #c62828;
+  --color-danger-soft: #fdecec;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --shadow-soft: 0px 8px 30px 0px rgb(0 0 0 / 0.06);
+  --shadow-soft-up: 0px -8px 30px 0px rgb(0 0 0 / 0.06);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #eceef3;
+  color: var(--color-ink);
+}
+
+/* Horizontal chip/card rows scroll by touch without showing a scrollbar. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
