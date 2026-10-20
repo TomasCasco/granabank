@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MovementListSkeleton } from "@/components/states";
 import { MovementsView } from "./movements-view";
+
+export const metadata: Metadata = { title: "Movimientos" };
 
 export default function MovementsPage() {
   return (

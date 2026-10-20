@@ -10,7 +10,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "GranaBank",
+  title: { default: "GranaBank", template: "%s · GranaBank" },
   description: "Con cada compra, sumás orgullo granate",
 };
 
