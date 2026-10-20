@@ -121,13 +121,27 @@ src/
 
 **Accesibilidad.** HTML semántico, labels en todos los campos, `aria-current` en la navegación, `aria-pressed` en los filtros, foco visible y textos alternativos.
 
+## Sugerencias de diseño
+
+Implementé el Figma tal cual. Estas son observaciones para charlar con el equipo de diseño, ordenadas por impacto:
+
+1. **El saldo como dato principal, con las tarjetas debajo.** El saldo es de la cuenta, no de cada tarjeta. Hoy se repite en cada una: con dos tarjetas aparece dos veces, e incluso en una tarjeta vencida. Mostrarlo arriba, grande, y debajo las tarjetas como medios de pago deja clara la jerarquía y evita la duplicación.
+2. **Ingresos y egresos se distinguen solo por el color.** "$95" recibido y "$95" enviado se ven iguales salvo por el tono, y eso no alcanza para personas con daltonismo. Sumar el signo ("+$95" / "−$95") lo resuelve sin cambiar la estética.
+3. **Unificar el color de los pagos recibidos.** En el Figma algunos están en granate y otros en verde (#74CC9B), por ejemplo "Martin Bozzini" y "Juan David". Implementé granate para todos.
+4. **Mostrar la fecha en la lista de movimientos**, o agruparlos por "Hoy", "Ayer" y "Esta semana". Sin fecha no se puede ubicar un movimiento en el tiempo.
+5. **Un acceso visible a "Ver todos"** junto a "Últimos movimientos". Hoy el camino es la lupa del encabezado, que no se asocia de inmediato con el listado.
+6. **Unificar los textos:**
+   - Voseo en todos lados: el subtítulo dice "sumás", pero los campos dicen "Ingresa tu email".
+   - Un solo nombre para el mismo concepto: el filtro dice "Debito Aut." (sin tilde) y el movimiento "Pago de suscripción".
+7. **Diseñar las pantallas y estados que faltan:** detalle de movimiento, carga, error, vacío, tarjeta vencida o bloqueada y saldo oculto. Los resolví con el lenguaje visual existente, pero conviene que diseño los defina.
+8. **Etiquetas en la barra inferior.** El ícono de documento no comunica "Movimientos" por sí solo. Un texto corto debajo de cada ícono mejora la claridad y la accesibilidad.
+9. **Contraste del gris secundario.** El #AAAAAA sobre blanco no llega al mínimo de accesibilidad (WCAG AA). Un gris un poco más oscuro mantiene la jerarquía y se lee mejor.
+
 ## Qué mejoraría con más tiempo
 
 - **Tests de integración** de las API routes contra una base de prueba aislada.
-- **Contraste del gris de los textos secundarios** (#AAAAAA sobre blanco). Respeté el color del Figma, pero no llega al mínimo de accesibilidad (WCAG AA). Lo charlaría con diseño.
 - **Límite de intentos de login** por IP o email, para frenar ataques de fuerza bruta.
 - **Paginación o scroll infinito** en Movimientos. Hoy trae todos, que alcanza para el volumen de ejemplo.
-- **Agrupar movimientos por fecha** ("Hoy", "Ayer", "Esta semana").
 - **Saldo calculado** a partir de los movimientos, o un historial de saldo, en lugar de un valor guardado.
 - **Layout de escritorio** propio, si hubiera diseño.
 - **Notificaciones reales** para la campana, que hoy solo muestra un aviso.
