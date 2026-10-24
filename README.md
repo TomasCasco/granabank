@@ -2,7 +2,7 @@
 
 Billetera virtual del Club Atlético Lanús, hecha para el challenge técnico. Login, inicio con tarjetas y últimos movimientos, listado de movimientos con búsqueda y filtros rápidos, y detalle de cada movimiento.
 
-**Demo:** _pendiente de deploy_
+**Demo:** https://granabank-six.vercel.app (fiel al Figma) · https://granabank-six.vercel.app/v2 (con sugerencias de diseño)
 **Credenciales:** `soygranate@clublanus.com` / `GRANATE1@`
 
 ### Dos versiones
